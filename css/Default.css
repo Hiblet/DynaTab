@@ -1,0 +1,122 @@
+﻿body 
+{
+    margin:0px; /* The whole page body area has a default margin of 10px, so you have to over-ride this */
+}
+
+#divContainerA,
+#divContainerB 
+{
+    width:800px; 
+    height:200px;
+    overflow:scroll;
+    background-color:#EEEEEE;
+    padding:8px; /* Small inset, should match margin between tabs */
+}
+
+
+/* Test data to display on tabs */
+
+.divRandom 
+{
+    padding:8px;
+}
+
+#divContentA1 
+{
+    color:Blue;
+    background-color:Red;
+    width:100px;
+    height:200px;
+    padding-top:8px;
+    padding-bottom:8px;
+    padding-right:8px;
+    padding-left:8px;    
+}
+
+#divContentA2
+{
+    color:Black;
+    background-color:Yellow;
+    width:200px;
+    height:100px;
+    padding-top:8px;
+    padding-bottom:8px;
+    padding-right:8px;
+    padding-left:8px;    
+}
+
+#divContentA3
+{
+    color:Black;
+    background-color:Green;
+    width:200px;
+    height:200px;
+    padding-top:8px;
+    padding-bottom:8px;
+    padding-right:8px;
+    padding-left:8px;    
+}
+
+
+
+/**************************/
+/* TAB STYLES FOR TESTING */
+
+/*
+.dynatabTestColour
+{
+    background-color:#DFDFF5;
+}
+*/
+
+.dynatabTabTest
+{
+    /* float:left; */ /* Tab should be forced in js to be float left, or possibly configurable left or right */
+    padding-top:3px;
+    padding-bottom:3px;
+    padding-right:10px;
+    padding-left:10px;
+    background-color:#DFDFF5;
+    margin-right:8px; /* Small gap between tabs */
+}
+
+/* Buttons on tabs */
+.dynatabTabTest > input[type=button]
+{
+    font-size:smaller;
+}
+
+/* .dynatabTabTestDeselected */
+/* { background-color:#B0B0F5; } */ /* Deselected tabs slightly darker */
+
+
+.dynatabContentTest
+{
+    /* clear:both; */ /* Should be set in code; Don't have anything floating either side */
+    /* width:100%; */ /* Width of the content window, should be set in code to 100% */
+    padding-top:10px;
+    padding-bottom:10px;
+    padding-right:10px;
+    padding-left:10px;   
+    background-color:#DFDFF5;
+}
+
+
+
+/*
+.dynatabTabTest, 
+.dynatabContentTest
+{
+    background-color:#DFDFF5;
+}
+*/
+
+/*
+.dynatabTabTest:hover
+{
+    opacity:0.8;
+}
+*/
+
+/* END TAB STYLES FOR TESTING */
+/******************************/

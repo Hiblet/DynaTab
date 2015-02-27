@@ -1,0 +1,52 @@
+################
+# Ignore Files #
+################
+
+
+################
+# JQuery files
+
+JQuery
+
+
+
+###############
+# Config file
+
+*.config
+
+
+#############
+# Log files 
+
+*.log
+website.*
+
+
+##################
+# Database files
+
+*.MDF
+*.ldf
+
+
+#######################
+# Documentation files
+
+*.xls
+*.xlsx
+
+################
+# System files
+
+bin
+obj
+*.sln
+*.suo
+*.csproj
+*.force
+*.cache
+
+#####################
+# Garbage directory
+
