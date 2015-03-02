@@ -3,22 +3,69 @@
     margin:0px; /* The whole page body area has a default margin of 10px, so you have to over-ride this */
 }
 
-#divContainerA,
-#divContainerB 
+#divPlaceHolderA,
+#divPlaceHolderB 
 {
     width:800px; 
     height:200px;
-    overflow:scroll;
-    background-color:#EEEEEE;
-    padding:8px; /* Small inset, should match margin between tabs */
+    background-color:#EEEEEE; /* A colour, so that the div can be seen */
+    padding:7px; /* Small inset, should match margin between tabs */
 }
 
 
+
+
+/**************************/
+/* TAB STYLES FOR TESTING */
+
+/* The container sits within the placeholder and provides the scrollbars */
+.dynatabContainerTest
+{
+    height:100%;
+    width:100%;
+    overflow:auto;
+}
+
+/* The colour for the tabs and background page should be the same, so set in one place */
+.dynatabTabTest,
+.dynatabContentTest
+{
+   background-color:#AFAFD5; 
+}
+
+/* The style for the tabs themselves.*/
+.dynatabTabTest
+{
+    padding-top:3px;
+    padding-bottom:3px;
+    padding-right:10px;
+    padding-left:10px;
+    margin-right:5px; /* Small gap between tabs, optional */
+}
+
+/* Styles for Close buttons on tabs */
+.dynatabTabTest > input[type=button]
+{
+    font-size:smaller;
+}
+
+/* Style for the page that each tab shows */
+.dynatabContentTest
+{
+    padding:11px;
+}
+
+
+/* END TAB STYLES FOR TESTING */
+/******************************/
+
+
+/********************************/
 /* Test data to display on tabs */
 
 .divRandom 
 {
-    padding:8px;
+    padding:37px;
 }
 
 #divContentA1 
@@ -27,10 +74,7 @@
     background-color:Red;
     width:100px;
     height:200px;
-    padding-top:8px;
-    padding-bottom:8px;
-    padding-right:8px;
-    padding-left:8px;    
+    padding:37px;
 }
 
 #divContentA2
@@ -38,11 +82,8 @@
     color:Black;
     background-color:Yellow;
     width:200px;
-    height:100px;
-    padding-top:8px;
-    padding-bottom:8px;
-    padding-right:8px;
-    padding-left:8px;    
+    height:30px;
+    padding:37px;
 }
 
 #divContentA3
@@ -51,72 +92,17 @@
     background-color:Green;
     width:200px;
     height:200px;
-    padding-top:8px;
-    padding-bottom:8px;
-    padding-right:8px;
-    padding-left:8px;    
+    padding:37px;
 }
 
-
-
-/**************************/
-/* TAB STYLES FOR TESTING */
-
-/*
-.dynatabTestColour
+#divContentA4
 {
-    background-color:#DFDFF5;
-}
-*/
-
-.dynatabTabTest
-{
-    /* float:left; */ /* Tab should be forced in js to be float left, or possibly configurable left or right */
-    padding-top:3px;
-    padding-bottom:3px;
-    padding-right:10px;
-    padding-left:10px;
-    background-color:#DFDFF5;
-    margin-right:8px; /* Small gap between tabs */
+    color:White;
+    background-color:Blue;
+    width:1000px;
+    height:400px;
+    padding:37px;
 }
 
-/* Buttons on tabs */
-.dynatabTabTest > input[type=button]
-{
-    font-size:smaller;
-}
-
-/* .dynatabTabTestDeselected */
-/* { background-color:#B0B0F5; } */ /* Deselected tabs slightly darker */
-
-
-.dynatabContentTest
-{
-    /* clear:both; */ /* Should be set in code; Don't have anything floating either side */
-    /* width:100%; */ /* Width of the content window, should be set in code to 100% */
-    padding-top:10px;
-    padding-bottom:10px;
-    padding-right:10px;
-    padding-left:10px;   
-    background-color:#DFDFF5;
-}
-
-
-
-/*
-.dynatabTabTest, 
-.dynatabContentTest
-{
-    background-color:#DFDFF5;
-}
-*/
-
-/*
-.dynatabTabTest:hover
-{
-    opacity:0.8;
-}
-*/
-
-/* END TAB STYLES FOR TESTING */
-/******************************/
+/*                              */
+/********************************/

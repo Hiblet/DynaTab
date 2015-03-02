@@ -21,19 +21,18 @@
     <form id="form1" runat="server">
     <div>
 
-        <%-- The target container to hold the tabs --%>
-        <div id="divContainerA"></div>
+        <%-- The target containers to hold the tabs --%>
+        <div id="divPlaceHolderA"></div>
         <br />
-        <div id="divContainerB"></div>
+        <div id="divPlaceHolderB"></div>
 
         <%-- Test Area --%>
-        <div id="divFeedback">FEEDBACK</div>
         <br />
         <input type="button" id="btnAddA" value="Add Tab A" />
         <br />
         <input type="button" id="btnAddB" value="Add Tab B" />
         <br />
-    
+
     </div>
     </form>
 </body>

@@ -27,6 +27,9 @@ nz.dynatab.config.sDivTypeContent = "CONTENT";
 
 nz.dynatab.config.sTabPrefix = "divTab_";
 nz.dynatab.config.sContentPrefix = "divContent_";
+nz.dynatab.config.sContainerPrefix = "divContainer_";
+nz.dynatab.config.sWrapperPrefix = "divWrapper_";
+nz.dynatab.config.nAreaSeqNum = 0;
 
 
 
@@ -51,7 +54,7 @@ nz.dynatab.error = function (msg) { if (nz.dynatab.config.bLog) { console.error(
 
 // First Function: Configure a new dynamic tab area so that you can begin
 // adding tabs.
-nz.dynatab.Build = function (sTabAreaId, styleDefn, sContainerId) {
+nz.dynatab.Build = function (sTabAreaId, styleDefn, sPlaceHolderId) {
     var prefix = "nz.dynatab.Build() - ";
     nz.dynatab.log(prefix + "Entering");
 
@@ -61,30 +64,62 @@ nz.dynatab.Build = function (sTabAreaId, styleDefn, sContainerId) {
         return;
     }
 
-    // Check container exists.
-    var container = document.getElementById(sContainerId);
-    if (fc.utils.isInvalidVar(container)) {
-        nz.dynatab.error(prefix + "Could not find the container with id >" + sContainerId + "<;  Cannot configure this container to hold a DynaTab control.");
+    // Check PlaceHolder exists.
+    var ph = document.getElementById(sPlaceHolderId);
+    if (fc.utils.isInvalidVar(ph)) {
+        nz.dynatab.error(prefix + "Could not find the PlaceHolder element with id >" + sPlaceHolderId + "<;  Cannot configure this element to hold a DynaTab control.");
         return;
     }
 
     // Don't let the container be used twice.
     // Check to see if it has been marked.
-    var mark = container.getAttribute("data-dynatabContainer");
+    var mark = ph.getAttribute("data-dynatabContainer");
     if (mark == true) {
-        nz.dynatab.error(prefix + "Container with id >" + sContainerId + "< already contains a DynaTab control.");
+        nz.dynatab.error(prefix + "PlaceHolder element with id >" + sPlaceHolderId + "< already contains a DynaTab control.");
         return;
     }
 
     // Mark the container
-    container.setAttribute("data-dynatabContainer", true);
+    ph.setAttribute("data-dynatabContainer", true);
 
+    // Setup operating variables
+    ++nz.dynatab.config.nAreaSeqNum;
     nz.dynatab[sTabAreaId] = new Object();
     nz.dynatab[sTabAreaId]["styleDefn"] = styleDefn;
-    nz.dynatab[sTabAreaId]["sContainerId"] = sContainerId;
+    nz.dynatab[sTabAreaId]["sPlaceHolderId"] = sPlaceHolderId;
     nz.dynatab[sTabAreaId]["seqNum"] = 0;
 
+    // Create the wrapping container
+    var container = document.createElement("div");
+    var sContainerId = nz.dynatab.config.sContainerPrefix + nz.dynatab.config.nAreaSeqNum.toString();
+    container.id = sContainerId;
+    nz.dynatab[sTabAreaId]["sContainerId"] = sContainerId;
+    container.className = styleDefn["container"];
+
+    // Functional settings
+    container.style.height = "100%";
+    container.style.width = "100%";
+    container.style.overflow = "auto";
+
+    ph.appendChild(container);
+
     nz.dynatab.getBackgroundColours(sTabAreaId, container);
+
+    // Create the tab wrapper
+    var wrapper = document.createElement("div");
+    var sWrapperId = nz.dynatab.config.sWrapperPrefix + nz.dynatab.config.nAreaSeqNum.toString();
+    wrapper.id = sWrapperId;
+    nz.dynatab[sTabAreaId]["sWrapperId"] = sWrapperId;
+    wrapper.className = styleDefn["wrapper"];
+
+    // Functional settings
+    wrapper.style.styleFloat = "left"; // IE
+    wrapper.style.cssFloat = "left"; // Non-IE
+    //wrapper.style.width = "100%";
+    wrapper.style.whiteSpace = "nowrap";
+
+    // Attach to the container
+    container.appendChild(wrapper);
 
     nz.dynatab.log(prefix + "Exiting");
 }
@@ -98,26 +133,31 @@ nz.dynatab.AddTab = function (sTabAreaId, sTabText, tabContent, bIncludeCloseBut
     // Default syntax; Default to illegal value if not set
     bIncludeCloseButton = (typeof bIncludeCloseButton === 'undefined') ? false : bIncludeCloseButton;
 
+    var sContainerId = nz.dynatab[sTabAreaId]["sContainerId"];
+    var container = document.getElementById(sContainerId);
+    if (container == null) {
+        nz.dynatab.error(prefix + "Could not access DynaTab container; Cannot add this tab.");
+        return false;
+    }
 
-    var container = nz.dynatab.getContainer(sTabAreaId);
-    if (container == null) return false;
+
+    var sWrapperId = nz.dynatab[sTabAreaId]["sWrapperId"];
+    var wrapper = document.getElementById(sWrapperId);
+    if (wrapper == null) {
+        nz.dynatab.error(prefix + "Could not access DynaTab wrapper; Cannot add this tab.");
+        return false;
+    }
+
 
     var index = ++nz.dynatab[sTabAreaId]["seqNum"];
 
     var divTab = nz.dynatab.createDivTab(sTabAreaId, index, sTabText, bIncludeCloseButton);
 
-    var firstContentNode = nz.dynatab.getFirstContentNode(container);
-    if (firstContentNode == null) {
-        container.appendChild(divTab);
-    }
-    else {
-        container.insertBefore(divTab, firstContentNode);
-    }
+    wrapper.appendChild(divTab);
 
     var divContent = nz.dynatab.createDivContent(sTabAreaId, index, tabContent, divTab, container);
     container.appendChild(divContent);
-    nz.dynatab.setDivContentHeight(tabContent, divTab, divContent, container);
-
+    
     nz.dynatab.setTabSelected(sTabAreaId, index);
 
     nz.dynatab.log(prefix + "Exiting");
@@ -131,7 +171,10 @@ nz.dynatab.removeTab = function (sTabAreaId, index) {
     var sContainerId = nz.dynatab[sTabAreaId]["sContainerId"];
     var container = document.getElementById(sContainerId);
 
-    var divTabNodeToRemove = nz.dynatab.getNode(container, nz.dynatab.config.sDivTypeTab, index);
+    var sWrapperId = nz.dynatab[sTabAreaId]["sWrapperId"];
+    var wrapper = document.getElementById(sWrapperId);
+
+    var divTabNodeToRemove = nz.dynatab.getNode(wrapper, nz.dynatab.config.sDivTypeTab, index);
     if (fc.utils.isInvalidVar(divTabNodeToRemove)) {
         nz.dynatab.error(prefix + "Failed to retrieve tab node for index >" + index + "<");
         return;
@@ -257,8 +300,7 @@ nz.dynatab.createDivTab = function (sTabAreaId, index, sTabText, bIncludeCloseBu
     divTab.setAttribute("data-areaid", sTabAreaId);
 
     divTab.className = nz.dynatab[sTabAreaId]["styleDefn"]["tab"];
-    divTab.style.styleFloat = 'left'; // IE
-    divTab.style.cssFloat = 'left'; // Non-IE
+    divTab.style.display = "inline-block"; 
 
     // Attach a click handler to the div
     divTab.onclick = nz.dynatab.divTab_onClick;
@@ -300,60 +342,6 @@ nz.dynatab.createDivContent = function (sTabAreaId, index, tabContent, divTab, c
 }
 
 
-nz.dynatab.setDivContentHeight = function (tabContent, divTab, divContent, container) {
-
-    var ht = "height";
-    var pt = "padding-top";
-    var pb = "padding-bottom";
-
-    var containerHt = container.offsetHeight;
-    var containerPt = fc.utils.getStyleValue(container, pt);
-    var containerPb = fc.utils.getStyleValue(container, pb);
-    var effectiveContainerHt = containerHt - (containerPt + containerPb);
-
-    var divTabHt = divTab.offsetHeight;
-    var divTabPt = fc.utils.getStyleValue(divTab, pt);
-    var divTabPb = fc.utils.getStyleValue(divTab, pb);
-
-    var divContentPt = fc.utils.getStyleValue(divContent, pt);
-    var divContentPb = fc.utils.getStyleValue(divContent, pb);
-    var effectiveDivContentPadding = divContentPt + divContentPb;
-
-    var tabContentHt = tabContent.offsetHeight;
-    var tabContentPt = fc.utils.getStyleValue(tabContent, pt);
-    var tabContentPb = fc.utils.getStyleValue(tabContent, pb);
-
-    var totalContentHt = divTabHt + tabContentHt + effectiveDivContentPadding;
-    if (totalContentHt < effectiveContainerHt) {
-        var requiredHeight = effectiveContainerHt - (divTabHt + effectiveDivContentPadding);
-        divContent.style.height = requiredHeight.toString() + "px";
-    }
-}
-
-
-nz.dynatab.getContainer = function (sTabAreaId) {
-    var prefix = "nz.dynatab.getContainer() - ";
-
-    // Check that this DynaTab area has been set up.
-    if (!nz.dynatab.hasOwnProperty(sTabAreaId)) {
-        nz.dynatab.error(prefix + "There is currently no DynaTab defined with id >" + sTabAreaId + "<");
-        return;
-    }
-
-    var sContainerId = nz.dynatab[sTabAreaId]["sContainerId"];
-    if (fc.utils.isInvalidVar(sContainerId)) {
-        nz.dynatab.error(prefix + "DynaTab " + sTabAreaId + " does not have a container defined.");
-        return;
-    }
-
-    var container = document.getElementById(sContainerId);
-    if (fc.utils.isInvalidVar(container)) {
-        nz.dynatab.error(prefix + "DynaTab " + sTabAreaId + " could not find a container with id >" + sContainerId + "<");
-        return;
-    }
-
-    return container;
-}
 
 nz.dynatab.getFirstContentNode = function (container) {
     var prefix = "nz.dynatab.getFirstContentNode() - ";
@@ -373,9 +361,9 @@ nz.dynatab.getFirstContentNode = function (container) {
 }
 
 
-nz.dynatab.getNode = function (container, targetType, index) {
+nz.dynatab.getNode = function (parent, targetType, index) {
     var targetNode = null;
-    var nodes = container.childNodes;
+    var nodes = parent.childNodes;
     for (var i = 0; i < nodes.length; ++i) {
         var currentNode = nodes[i];
         var currentType = currentNode.getAttribute("data-divtype");
@@ -388,17 +376,19 @@ nz.dynatab.getNode = function (container, targetType, index) {
     return targetNode;
 }
 
-nz.dynatab.getPeerNodes = function (container, targetType, nIndexToExclude) {
+nz.dynatab.getPeerNodes = function (parent, targetType, nIndexToExclude) {
+    var prefix = "nz.dynatab.getPeerNodes() - ";
 
     // Default syntax; Default to illegal value if not set
     nIndexToExclude = (typeof nIndexToExclude === 'undefined') ? -1 : nIndexToExclude;
 
     var arrPeerNodes = [];
-    var nodes = container.childNodes;
+
+    var nodes = parent.childNodes;
     for (var i = 0; i < nodes.length; ++i) {
         var currentNode = nodes[i];
-        var currentType = currentNode.getAttribute("data-divtype");
-        var currentIndex = currentNode.getAttribute("data-index");
+        var currentType = currentNode.getAttribute("data-divtype") || "";
+        var currentIndex = currentNode.getAttribute("data-index") || -1;
         if (currentType == targetType && currentIndex != nIndexToExclude) {
             arrPeerNodes.push(currentNode);
         }
@@ -416,10 +406,14 @@ nz.dynatab.setTabSelected = function (sTabAreaId, index) {
     var sContainerId = nz.dynatab[sTabAreaId]["sContainerId"];
     var container = document.getElementById(sContainerId);
 
+    var sWrapperId = nz.dynatab[sTabAreaId]["sWrapperId"];
+    var wrapper = document.getElementById(sWrapperId);
+
+
     var sColourSelected = nz.dynatab[sTabAreaId]["colourSelected"];
     var sColourDeselected = nz.dynatab[sTabAreaId]["colourDeselected"];
 
-    var arrTabs = nz.dynatab.getPeerNodes(container, nz.dynatab.config.sDivTypeTab);
+    var arrTabs = nz.dynatab.getPeerNodes(wrapper, nz.dynatab.config.sDivTypeTab);
 
     // Iterate these tabs and set background colour slightly darker than specified
     // style colour, except where the index is the set index.
@@ -449,5 +443,127 @@ nz.dynatab.setTabSelected = function (sTabAreaId, index) {
         }
     }
 
+    // Make this divContent screen extend to the last tab, and adjust for scrollbars.
+    nz.dynatab.resetDivContentHeight(sTabAreaId, index);
+    nz.dynatab.resetDivContentWidth(sTabAreaId, index);
+
     nz.dynatab.log(prefix + "Exiting");
 }
+
+nz.dynatab.resetDivContentHeight = function (sTabAreaId, index) {
+
+    var ht = "height";
+    var wd = "width";
+    var pt = "padding-top";
+    var pb = "padding-bottom";
+
+    // Get the wrapper
+    var sWrapperId = nz.dynatab[sTabAreaId]["sWrapperId"];
+    var wrapper = document.getElementById(sWrapperId);
+
+    // Get the container
+    var sContainerId = nz.dynatab[sTabAreaId]["sContainerId"];
+    var container = document.getElementById(sContainerId);
+
+    // Get the divContent (div encasing the foreign content)
+    var divContent = nz.dynatab.getNode(container, nz.dynatab.config.sDivTypeContent, index);
+
+    // Get the tabContent (the foreign content)
+    var tabContent = divContent.firstElementChild;
+
+    var containerHt = container.offsetHeight;
+    var containerPt = fc.utils.getStyleValue(container, pt);
+    var containerPb = fc.utils.getStyleValue(container, pb);
+    var effectiveContainerHt = containerHt - (containerPt + containerPb);
+    var bContainerXScrollbar = container.scrollWidth > container.clientWidth;
+
+    var wrapperHt = wrapper.offsetHeight;
+
+    var divContentPt = fc.utils.getStyleValue(divContent, pt);
+    var divContentPb = fc.utils.getStyleValue(divContent, pb);
+    var effectiveDivContentPadding = divContentPt + divContentPb;
+
+    var tabContentHt = tabContent.offsetHeight;
+    var tabContentPt = fc.utils.getStyleValue(tabContent, pt);
+    var tabContentPb = fc.utils.getStyleValue(tabContent, pb);
+
+    var totalContentHt = wrapperHt + tabContentHt + effectiveDivContentPadding;
+
+    var scrollbarHeight = fc.utils.getScrollBarHeight();
+    var scrollbarXCompensation = bContainerXScrollbar ? scrollbarHeight : 0;
+
+    if (totalContentHt < effectiveContainerHt) {
+        var requiredHeight = effectiveContainerHt - (wrapperHt + effectiveDivContentPadding + scrollbarXCompensation);
+        divContent.style.height = requiredHeight.toString() + "px";
+    }
+}
+
+nz.dynatab.resetDivContentWidth = function (sTabAreaId, index) {
+    // Adjust the visible content div to be at least the width of the tab wrapper
+
+    // Get the padding values for left and right for the DivContent area
+    var pl = "padding-left";
+    var pr = "padding-right";
+
+    // Get the placeholder
+    var sPlaceHolderId = nz.dynatab[sTabAreaId]["sPlaceHolderId"];
+    var placeholder = document.getElementById(sPlaceHolderId);
+    var placeholderWd = placeholder.offsetWidth;
+    var placeholderPl = fc.utils.getStyleValue(placeholder, pl);
+    var placeholderPr = fc.utils.getStyleValue(placeholder, pr);
+    var effectivePlaceholderPadding = placeholderPl + placeholderPr;
+    var effectivePlaceholderWd = placeholderWd - effectivePlaceholderPadding;
+
+
+    // Get the wrapper
+    var sWrapperId = nz.dynatab[sTabAreaId]["sWrapperId"];
+    var wrapper = document.getElementById(sWrapperId);
+    var wrapperWd = wrapper.offsetWidth;
+
+    // Get the container and get its width
+    var sContainerId = nz.dynatab[sTabAreaId]["sContainerId"];
+    var container = document.getElementById(sContainerId);
+    var containerWd = container.offsetWidth;
+    var containerPl = fc.utils.getStyleValue(container, pl);
+    var containerPr = fc.utils.getStyleValue(container, pr);
+
+    var bContainerYScrollbar = container.scrollHeight > container.clientHeight;
+    var scrollbarWd = fc.utils.getScrollBarWidth();
+    var scrollbarYCompensation = bContainerYScrollbar ? scrollbarWd : 0;
+
+    // Work out what the divContent width would be if it were dictated
+    // solely by the content it was required to show
+    var divContent = nz.dynatab.getNode(container, nz.dynatab.config.sDivTypeContent, index);
+    var divContentPl = fc.utils.getStyleValue(divContent, pl);
+    var divContentPr = fc.utils.getStyleValue(divContent, pr);
+    var effectiveDivContentPadding = (divContentPl + divContentPr);
+
+    var effectiveContainerWd = effectivePlaceholderWd - scrollbarYCompensation;
+
+    // Get the tabContent (the foreign content)
+    var tabContent = divContent.firstElementChild;
+    var tabContentWd = tabContent.offsetWidth;
+
+    var predictedDivContentWd = tabContentWd + effectiveDivContentPadding;
+
+    // If the predicted divContent width is less than either the tab header width
+    // or the available screen real estate, we pad the divContent out to whichever
+    // is the larger.
+
+    // We want to pad the content area out to be at least the width of 
+    // the container, and at least the width of the tab header, so take
+    // the maximum of the two as the limit.
+    var limitWd = Math.max(wrapperWd, effectiveContainerWd);
+
+    // If the tabContent (plus padding) does not naturally extend beyond the limit extend the divContent
+    if (predictedDivContentWd < limitWd) {
+        //var requiredWd = limitWd - (effectiveDivContentPadding + effectivePlaceholderPadding);
+        var requiredWd = limitWd - effectiveDivContentPadding;
+        divContent.style.width = requiredWd.toString() + "px";
+    }
+    else {
+        divContent.style.width = tabContentWd.toString() + "px";
+    }
+}
+
+
