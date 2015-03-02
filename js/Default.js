@@ -59,19 +59,20 @@ nz.test.init = function () {
 
     // BUILD A STYLE OBJECT TO DEFINE THE TAB STYLE
     var styleDefn = new Object();
-    styleDefn["colour"] = "dynatabTestColour"; // Set colour for tab and panel
     styleDefn["tab"] = "dynatabTabTest"; // Settings for a div, essentially padding around content (ie text and button)                        
     styleDefn["content"] = "dynatabContentTest";
+    styleDefn["container"] = "dynatabContainerTest"; // The outer containing div style
+    styleDefn["wrapper"] = "dynatabWrapperTest"; // Ideally, make all the functionally required elements embedded in the JS code
 
 
 
     // Tests:
 
     // Try attaching a dynatab to a container that does not exist.
-    var containerA = document.getElementById("divContainerA");
-    nz.dynatab.Build("TabSetA", styleDefn, containerA.id);
+    var phA = document.getElementById("divPlaceHolderA");
+    nz.dynatab.Build("TabSetA", styleDefn, phA.id);
 
-    nz.dynatab.Build("TabSetB", styleDefn, "divContainerB");
+    nz.dynatab.Build("TabSetB", styleDefn, "divPlaceHolderB");
 
     // Make something to show in the tab and show
     var contentA1 = document.createElement("div");
@@ -91,6 +92,11 @@ nz.test.init = function () {
     contentA3.innerHTML = "DIV ContentA3";
     nz.dynatab.AddTab("TabSetA", "Tab The Third of Many", contentA3, true);
 
+    // Make something to show in the tab show
+    var contentA4 = document.createElement("div");
+    contentA4.id = "divContentA4";
+    contentA4.innerHTML = "DIV ContentA4";
+    nz.dynatab.AddTab("TabSetA", "Tab 4th", contentA4, true);
 
 
     // Try attaching a dynatab to a container that already has a dynatab.
@@ -119,10 +125,12 @@ nz.test.createRandomContent = function () {
     divRandom.className = "divRandom";
     divRandom.style.backgroundColor = nz.test.createRandomRGBColour(0, 64, 0, 64, 0, 64);
     divRandom.style.color = nz.test.createRandomRGBColour(191, 255, 191, 255, 191, 255);
+    document.documentElement.appendChild(divRandom);
     divRandom.style.height = (50 + Math.round(Math.random * 300)).toString() + "px";
     divRandom.style.width = (100 + Math.round(Math.random * 1000)).toString() + "px";
     return divRandom;
 }
+
 
 nz.test.createRandomRGBColour = function (rMin, rMax, gMin, gMax, bMin, bMax) {
     rMin = Math.min(Math.max(rMin, 0), 255);
