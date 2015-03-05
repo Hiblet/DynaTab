@@ -3,8 +3,7 @@
     margin:0px; /* The whole page body area has a default margin of 10px, so you have to over-ride this */
 }
 
-#divPlaceHolderA,
-#divPlaceHolderB 
+#divPlaceHolderA 
 {
     width:800px; 
     height:200px;
@@ -12,6 +11,13 @@
     padding:7px; /* Small inset, should match margin between tabs */
 }
 
+#divPlaceHolderB 
+{
+    width:800px; 
+    /* height:200px; */ /* No Height Setting */
+    background-color:#EEEEEE; /* A colour, so that the div can be seen */
+    padding:7px; /* Small inset, should match margin between tabs */
+}
 
 
 

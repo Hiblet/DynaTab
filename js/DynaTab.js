@@ -110,12 +110,10 @@ nz.dynatab.Build = function (sTabAreaId, styleDefn, sPlaceHolderId) {
     var sWrapperId = nz.dynatab.config.sWrapperPrefix + nz.dynatab.config.nAreaSeqNum.toString();
     wrapper.id = sWrapperId;
     nz.dynatab[sTabAreaId]["sWrapperId"] = sWrapperId;
-    wrapper.className = styleDefn["wrapper"];
 
     // Functional settings
     wrapper.style.styleFloat = "left"; // IE
     wrapper.style.cssFloat = "left"; // Non-IE
-    //wrapper.style.width = "100%";
     wrapper.style.whiteSpace = "nowrap";
 
     // Attach to the container

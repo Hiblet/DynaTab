@@ -62,7 +62,6 @@ nz.test.init = function () {
     styleDefn["tab"] = "dynatabTabTest"; // Settings for a div, essentially padding around content (ie text and button)                        
     styleDefn["content"] = "dynatabContentTest";
     styleDefn["container"] = "dynatabContainerTest"; // The outer containing div style
-    styleDefn["wrapper"] = "dynatabWrapperTest"; // Ideally, make all the functionally required elements embedded in the JS code
 
 
 
@@ -125,9 +124,14 @@ nz.test.createRandomContent = function () {
     divRandom.className = "divRandom";
     divRandom.style.backgroundColor = nz.test.createRandomRGBColour(0, 64, 0, 64, 0, 64);
     divRandom.style.color = nz.test.createRandomRGBColour(191, 255, 191, 255, 191, 255);
+
+    var sHeight = (fc.utils.getRandomInt(50,800)).toString() + "px";
+    divRandom.style.height = sHeight;
+
+    var sWidth = (fc.utils.getRandomInt(100, 1000)).toString() + "px";
+    divRandom.style.width = sWidth;
+
     document.documentElement.appendChild(divRandom);
-    divRandom.style.height = (50 + Math.round(Math.random * 300)).toString() + "px";
-    divRandom.style.width = (100 + Math.round(Math.random * 1000)).toString() + "px";
     return divRandom;
 }
 

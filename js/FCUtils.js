@@ -1,4 +1,4 @@
-﻿///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 // STYLE DECLARATION
 // Use double quotes in JavaScript
 
@@ -1010,6 +1010,7 @@ fc.utils.getScrollBarHeight = function () {
     return (h1 - h2);
 };
 
+// Returns string eg "200px"
 fc.utils.getStyle = function (oElm, strCssRule) {
     var strValue = "";
     if (oElm.currentStyle) {
@@ -1026,6 +1027,7 @@ fc.utils.getStyle = function (oElm, strCssRule) {
     return strValue;
 }
 
+// Returns numeric value ie 200
 fc.utils.getStyleValue = function (oElm, strCssRule) {
     var strValue = fc.utils.getStyle(oElm, strCssRule);
     return parseInt(strValue.match(/\d+/g), 10) || 0;
@@ -1954,6 +1956,32 @@ fc.utils.adjustColourLuminance = function (colour, lum) {
 
 //
 ///////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Maths
+
+// The function below is credited to the Mozilla Development Center:
+/* Returns a random integer between min (inclusive) and max (inclusive)
+*  Using Math.round() will give you a non-uniform distribution! */
+fc.utils.getRandomInt = function (min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+//
+///////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
 
 
 
