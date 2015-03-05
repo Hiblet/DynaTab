@@ -21,17 +21,26 @@
     <form id="form1" runat="server">
     <div>
 
+
+        <%-- Test Controls --%>
+        <br />
+        <input type="button" id="btnAddA" value="Add Tab A" />
+        &nbsp
+        <input type="button" id="btnAddB" value="Add Tab B" />
+        <br />
+
+
         <%-- The target containers to hold the tabs --%>
+        <br />
+        Below is an example where the PlaceHolder DIV element has fixed height
+        <br />
         <div id="divPlaceHolderA"></div>
+        <br />
+        <br />
+        And the DIV below is an example where the height is not fixed
         <br />
         <div id="divPlaceHolderB"></div>
 
-        <%-- Test Area --%>
-        <br />
-        <input type="button" id="btnAddA" value="Add Tab A" />
-        <br />
-        <input type="button" id="btnAddB" value="Add Tab B" />
-        <br />
 
     </div>
     </form>
