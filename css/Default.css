@@ -19,6 +19,15 @@
     padding:7px; /* Small inset, should match margin between tabs */
 }
 
+#divPlaceHolderC
+{
+    width:600px; 
+    height:200px; 
+    background-color:#EEEEEE; /* A colour, so that the div can be seen */
+    padding:7px; /* Small inset, should match margin between tabs */
+}
+
+
 
 
 /**************************/

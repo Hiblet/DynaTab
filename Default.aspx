@@ -27,6 +27,8 @@
         <input type="button" id="btnAddA" value="Add Tab A" />
         &nbsp
         <input type="button" id="btnAddB" value="Add Tab B" />
+        &nbsp
+        <input type="button" id="btnAddC" value="Add Tab C" />
         <br />
 
 
@@ -37,9 +39,16 @@
         <div id="divPlaceHolderA"></div>
         <br />
         <br />
-        And the DIV below is an example where the height is not fixed
+        The DIV below is an example where the placeholder height is not fixed
         <br />
         <div id="divPlaceHolderB"></div>
+        <br />
+        <br />
+        The DIV below is an example where the content of the tab is sized by relative percentage, rather than being fixed pixel size.
+        <br />
+        <div id="divPlaceHolderC"></div>
+        <br />
+        <br />
 
 
     </div>
