@@ -4,7 +4,6 @@
 
 
 // To include files for VS to understand and query them, use this syntax..
-// ///<reference path="../FCUtils.js" />
 
 // Define the console if not already defined
 if (!window.console) console = { log: function () { } };
@@ -213,7 +212,9 @@ fc.utils.insertAtIndex = function (sTarget, sInsert, index) {
     return sTarget.substring(0, index) + sInsert + sTarget.substring(index);
 }
 
-
+fc.utils.endsWith = function (sTarget, sSuffix) {
+    return sTarget.indexOf(sSuffix, sTarget.length - sSuffix.length) !== -1;
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 //

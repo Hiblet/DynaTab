@@ -12,7 +12,7 @@ Each tab control can have it's own styles set independently.
 
 If you have a web page that users interact with to create results or add data to, the resultant data needs to be displayed.
 The resultant data can be difficult to display if it varies in size or type with each interaction.
-This control was written because I had to display an indefinite number of user orders (tabular information), and allow the orders to be held open for comparison.
+This control was written because I had to display an indefinite number of user query results (tabular information), and allow the results to be held open for comparison.
 The user has the option to close tabs with an 'x' button on the tab.
 
 The control is attached to a placeholder element in HTML, and no other HTML is required.
@@ -33,30 +33,38 @@ In your main JavaScript code (see Default.js in this project) you define a JS ob
     styleDefn["tab"] = "dynatabTabTest"; 
     styleDefn["content"] = "dynatabContentTest";
     styleDefn["container"] = "dynatabContainerTest"; 
-    styleDefn["wrapper"] = "dynatabWrapperTest"; 
 
 Then call the Build() function once in the lifetime of the page, for each control you wish to construct, with a name for the control, the style object, and the HTML ID of the placeholder element that the control will be appended to.
 
     nz.dynatab.Build("TabSetA", styleDefn, "IDofPlaceHolderA");
 
 The control can now create tabs.
-A tab is added by calling AddTab() with the control name, the text to use for the tab, the HTML element to display on the tab, and a bool true/false flag to stipulate whether the 'Close' button should be added for this tab.
+A tab is added by calling AddTab() with the arguments being... 
 
-    nz.dynatab.AddTab("TabSetA", "Tab 1", contentA1, true);
+ - the control name
+ - the text to use for the tab
+ - the HTML element to display on the tab
+ - a bool flag to stipulate whether the tab content Height is relative (true) or fixed (false)
+ - a bool flag to stipulate whether the tab content Width is relative (true) or fixed (false) 
+ - an optional bool true/false flag to stipulate whether the 'Close' button should be added for this tab, which defaults to false.
+
+<!-- comment: Work around to have a code block follow a ul list --> 
+
+        nz.dynatab.AddTab("TabSetA", "Tab 1", contentA1, false, false, true);
 
 
 ## Example Project ##
 
-This project contains a very simple harness that sets up two tab areas.
-The first control has example content, the second has no starting content.
+This project contains a very simple harness that sets up three tab areas.
+The first control has example content.  The second has no starting content, and variable height.  The third also has no starting content, but has fixed height. 
 There are buttons to add content to either tab area, and that content is randomly generated.
 
 
 
 ## Implementation ##
 
-Implemented using Javascript only.
-Note: There may be functions in FCUtils.js that use JQuery, I need to investigate further.
+Implemented using Javascript only.  JQuery is used in the Default.js harness code only, there is no JQuery requirement for DynaTab.js or FCUtils.js.
+
 
 
 ## Licensing ##

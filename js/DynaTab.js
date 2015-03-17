@@ -24,9 +24,11 @@ nz.dynatab.config = new Object();
 
 nz.dynatab.config.sDivTypeTab = "TAB";
 nz.dynatab.config.sDivTypeContent = "CONTENT";
+nz.dynatab.config.sDivTypeContentInner = "CONTENT_INNER";
 
 nz.dynatab.config.sTabPrefix = "divTab_";
 nz.dynatab.config.sContentPrefix = "divContent_";
+nz.dynatab.config.sContentInnerPrefix = "divContentInner_";
 nz.dynatab.config.sContainerPrefix = "divContainer_";
 nz.dynatab.config.sWrapperPrefix = "divWrapper_";
 nz.dynatab.config.nAreaSeqNum = 0;
@@ -124,7 +126,7 @@ nz.dynatab.Build = function (sTabAreaId, styleDefn, sPlaceHolderId) {
 
 
 
-nz.dynatab.AddTab = function (sTabAreaId, sTabText, tabContent, bIncludeCloseButton) {
+nz.dynatab.AddTab = function (sTabAreaId, sTabText, tabContent, bContentHeightIsRelative, bContentWidthIsRelative, bIncludeCloseButton) {
     var prefix = "nz.dynatab.AddTab() - ";
     nz.dynatab.log(prefix + "Entering");
 
@@ -154,6 +156,8 @@ nz.dynatab.AddTab = function (sTabAreaId, sTabText, tabContent, bIncludeCloseBut
     wrapper.appendChild(divTab);
 
     var divContent = nz.dynatab.createDivContent(sTabAreaId, index, tabContent, divTab, container);
+    divContent.setAttribute("data-contentHtIsRelative", bContentHeightIsRelative);
+    divContent.setAttribute("data-contentWdIsRelative", bContentWidthIsRelative);
     container.appendChild(divContent);
     
     nz.dynatab.setTabSelected(sTabAreaId, index);
@@ -330,11 +334,17 @@ nz.dynatab.createDivContent = function (sTabAreaId, index, tabContent, divTab, c
     divContent.id = nz.dynatab.config.sContentPrefix + tabId; // example: divContent_MYTABAREA_1
     divContent.setAttribute("data-divtype", nz.dynatab.config.sDivTypeContent);
     divContent.setAttribute("data-index", index);
-    divContent.className = nz.dynatab[sTabAreaId]["styleDefn"]["content"];
 
+    divContent.className = nz.dynatab[sTabAreaId]["styleDefn"]["content"];
     divContent.style.clear = "both";
 
-    divContent.appendChild(tabContent);
+    var divContentInner = document.createElement("div");
+    divContentInner.id = nz.dynatab.config.sContentInnerPrefix + tabId;
+    divContentInner.setAttribute("data-divtype", nz.dynatab.config.sDivTypeContentInner);
+    divContentInner.setAttribute("data-index", index);
+
+    divContent.appendChild(divContentInner);
+    divContentInner.appendChild(tabContent);
 
     return divContent;
 }
@@ -442,8 +452,10 @@ nz.dynatab.setTabSelected = function (sTabAreaId, index) {
     }
 
     // Make this divContent screen extend to the last tab, and adjust for scrollbars.
-    nz.dynatab.resetDivContentHeight(sTabAreaId, index);
+    // Note; We do the Width first because this is the dimension that is more
+    // likely to cause a scrollbar to occur.  
     nz.dynatab.resetDivContentWidth(sTabAreaId, index);
+    nz.dynatab.resetDivContentHeight(sTabAreaId, index);
 
     nz.dynatab.log(prefix + "Exiting");
 }
@@ -465,17 +477,22 @@ nz.dynatab.resetDivContentHeight = function (sTabAreaId, index) {
 
     // Get the divContent (div encasing the foreign content)
     var divContent = nz.dynatab.getNode(container, nz.dynatab.config.sDivTypeContent, index);
+    var divContentInner = nz.dynatab.getNode(divContent, nz.dynatab.config.sDivTypeContentInner, index);
+
 
     // Get the tabContent (the foreign content)
-    var tabContent = divContent.firstElementChild;
+    var tabContent = divContentInner.firstElementChild;
 
     var containerHt = container.offsetHeight;
     var containerPt = fc.utils.getStyleValue(container, pt);
     var containerPb = fc.utils.getStyleValue(container, pb);
     var effectiveContainerHt = containerHt - (containerPt + containerPb);
+
     var bContainerXScrollbar = container.scrollWidth > container.clientWidth;
 
     var wrapperHt = wrapper.offsetHeight;
+
+
 
     var divContentPt = fc.utils.getStyleValue(divContent, pt);
     var divContentPb = fc.utils.getStyleValue(divContent, pb);
@@ -484,6 +501,7 @@ nz.dynatab.resetDivContentHeight = function (sTabAreaId, index) {
     var tabContentHt = tabContent.offsetHeight;
     var tabContentPt = fc.utils.getStyleValue(tabContent, pt);
     var tabContentPb = fc.utils.getStyleValue(tabContent, pb);
+    var effectiveTabContentPadding = tabContentPt + tabContentPb;
 
     var totalContentHt = wrapperHt + tabContentHt + effectiveDivContentPadding;
 
@@ -491,8 +509,11 @@ nz.dynatab.resetDivContentHeight = function (sTabAreaId, index) {
     var scrollbarXCompensation = bContainerXScrollbar ? scrollbarHeight : 0;
 
     if (totalContentHt < effectiveContainerHt) {
-        var requiredHeight = effectiveContainerHt - (wrapperHt + effectiveDivContentPadding + scrollbarXCompensation);
-        divContent.style.height = requiredHeight.toString() + "px";
+        var requiredContentHt = effectiveContainerHt - (wrapperHt + effectiveDivContentPadding + scrollbarXCompensation);
+        divContent.style.height = requiredContentHt.toString() + "px";
+
+        var requiredContentInnerHt = requiredContentHt - effectiveTabContentPadding;
+        divContentInner.style.height = requiredContentInnerHt.toString() + "px";
     }
 }
 
@@ -538,9 +559,19 @@ nz.dynatab.resetDivContentWidth = function (sTabAreaId, index) {
 
     var effectiveContainerWd = effectivePlaceholderWd - scrollbarYCompensation;
 
+    var divContentInner = nz.dynatab.getNode(divContent, nz.dynatab.config.sDivTypeContentInner, index);
+    // divContentInner should have no padding
+
     // Get the tabContent (the foreign content)
-    var tabContent = divContent.firstElementChild;
+    var tabContent = divContentInner.firstElementChild;
     var tabContentWd = tabContent.offsetWidth;
+    var tabContentPl = fc.utils.getStyleValue(tabContent, pl);
+    var tabContentPr = fc.utils.getStyleValue(tabContent, pr);
+    var effectiveTabContentPadding = (tabContentPl + tabContentPr);
+
+    // Check the style to see if tabContent is fixed with or relative
+    var sContentWdIsRelative = divContent.getAttribute("data-contentWdIsRelative");
+    var bContentWdIsRelative = (sContentWdIsRelative == "false" ? false : true);
 
     var predictedDivContentWd = tabContentWd + effectiveDivContentPadding;
 
@@ -553,15 +584,31 @@ nz.dynatab.resetDivContentWidth = function (sTabAreaId, index) {
     // the maximum of the two as the limit.
     var limitWd = Math.max(wrapperWd, effectiveContainerWd);
 
-    // If the tabContent (plus padding) does not naturally extend beyond the limit extend the divContent
-    if (predictedDivContentWd < limitWd) {
-        //var requiredWd = limitWd - (effectiveDivContentPadding + effectivePlaceholderPadding);
-        var requiredWd = limitWd - effectiveDivContentPadding;
-        divContent.style.width = requiredWd.toString() + "px";
+    if (!bContentWdIsRelative) {
+        // TabContent is fixed width
+
+        // If the tabContent (plus padding) does not naturally extend beyond the limit extend the divContent
+        if (predictedDivContentWd < limitWd) {
+            var requiredWd = limitWd - effectiveDivContentPadding;
+            divContent.style.width = requiredWd.toString() + "px";
+        }
+        else {
+            divContent.style.width = tabContentWd.toString() + "px";
+        }
     }
     else {
-        divContent.style.width = tabContentWd.toString() + "px";
+        // TabContent is relative width
+
+        // Set the content div to be the maximum width of the container,
+        // and set the inner div to adjust for padding of content div and tab div
+
+        var requiredContentWd = limitWd - effectiveDivContentPadding;
+        divContent.style.width = requiredContentWd.toString() + "px";
+
+        var requiredContentInnerWd = requiredContentWd - effectiveTabContentPadding;
+        divContentInner.style.width = requiredContentInnerWd.toString() + "px";
     }
+
 }
 
 
