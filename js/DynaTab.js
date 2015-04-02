@@ -166,6 +166,60 @@ nz.dynatab.AddTab = function (sTabAreaId, sTabText, tabContent, bContentHeightIs
     return true;
 }
 
+
+// Remove all tabs
+nz.dynatab.Clear = function (sTabAreaId) {
+    var prefix = "nz.dynatab.Clear() - ";
+    nz.dynatab.log(prefix + "Entering");
+
+    // Get existing indices, call removeTab on each index value.
+
+    var indices = nz.dynatab.getIndices(sTabAreaId);
+    var j = 0;
+    for (; j < indices.length; ++j) {
+        nz.dynatab.removeTab(sTabAreaId, indices[j]);
+    }
+
+    nz.dynatab.log(prefix + "Exiting");
+}
+
+
+nz.dynatab.getIndices = function (sTabAreaId) {
+    var prefix = "nz.dynatab.getIndices() - ";
+    nz.dynatab.log(prefix + "Entering");
+
+    // Iterate the tabs and get their index values.
+    var indices = [];
+
+    var sWrapperId = nz.dynatab[sTabAreaId]["sWrapperId"];
+    var wrapper = document.getElementById(sWrapperId);
+    if (wrapper == null) {
+        nz.dynatab.error(prefix + "Could not access DynaTab wrapper; Cannot clear this tab set.");
+        return indices;
+    }
+
+    // Wrapper is not null.
+    // Iterate the child nodes, find nodes that have attribute "data-index", 
+    // record that index.
+
+    var countNodes = wrapper.childNodes.length;
+    var i = 0;
+    for (; i < countNodes; ++i) {
+        var currentNode = wrapper.childNodes[i];
+        var currentType = currentNode.getAttribute("data-divtype");
+        var currentIndex = currentNode.getAttribute("data-index");
+        if (currentType == nz.dynatab.config.sDivTypeTab) {
+            // This node is a div Tab node, so note it's index value
+            indices.push(currentIndex);
+        }
+    }
+
+    var sIndices = indices.join(", ");
+    nz.dynatab.log(prefix + "Exiting; Returning array: [" + sIndices + "]");
+    return indices;
+}
+
+
 nz.dynatab.removeTab = function (sTabAreaId, index) {
     var prefix = "nz.dynatab.removeTab() - ";
     nz.dynatab.log(prefix + "Entering");

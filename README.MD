@@ -53,6 +53,10 @@ A tab is added by calling AddTab() with the arguments being...
         nz.dynatab.AddTab("TabSetA", "Tab 1", contentA1, false, false, true);
 
 
+To remove all tabs, a Clear() function has been implemented, which requires the control name as an argument.
+
+
+
 ## Example Project ##
 
 This project contains a very simple harness that sets up three tab areas.
