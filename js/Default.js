@@ -186,6 +186,14 @@ nz.test.btnAddA_onClick = function (id, event) {
     nz.dynatab.AddTab("TabSetA", sTabText, content, false, false, true);
 }
 
+nz.test.btnClearA_onClick = function (id, event) {
+    var prefix = "nz.test.btnClearA_onClick() - ";
+    nz.test.log(prefix + "Clicked: " + id);
+
+    nz.dynatab.Clear("TabSetA");
+}
+
+
 nz.test.btnAddB_onClick = function (id, event) {
     var prefix = "nz.test.btnAddB_onClick() - ";
     nz.test.log(prefix + "Clicked: " + id);
@@ -216,5 +224,9 @@ nz.test.hookupHandlers = function () {
 
     var btnAddC = document.getElementById("btnAddC");
     fc.utils.addEvent(btnAddC, "click", nz.test.btnAddC_onClick);
+
+    var btnClearA = document.getElementById("btnClearA");
+    fc.utils.addEvent(btnClearA, "click", nz.test.btnClearA_onClick);
+
 }
 

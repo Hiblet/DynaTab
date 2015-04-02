@@ -25,6 +25,7 @@
         <%-- Test Controls --%>
         <br />
         <input type="button" id="btnAddA" value="Add Tab A" />
+        <input type="button" id="btnClearA" value="Clear A" />
         &nbsp
         <input type="button" id="btnAddB" value="Add Tab B" />
         &nbsp
