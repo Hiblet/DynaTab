@@ -91,6 +91,9 @@ nz.dynatab.Build = function (sTabAreaId, styleDefn, sPlaceHolderId) {
     nz.dynatab[sTabAreaId]["sPlaceHolderId"] = sPlaceHolderId;
     nz.dynatab[sTabAreaId]["seqNum"] = 0;
 
+    nz.dynatab[sTabAreaId]["callback"] = {};
+    nz.dynatab[sTabAreaId]["callback"]["change"] = null;
+
     // Create the wrapping container
     var container = document.createElement("div");
     var sContainerId = nz.dynatab.config.sContainerPrefix + nz.dynatab.config.nAreaSeqNum.toString();
@@ -159,8 +162,10 @@ nz.dynatab.AddTab = function (sTabAreaId, sTabText, tabContent, bContentHeightIs
     divContent.setAttribute("data-contentHtIsRelative", bContentHeightIsRelative);
     divContent.setAttribute("data-contentWdIsRelative", bContentWidthIsRelative);
     container.appendChild(divContent);
-    
+
     nz.dynatab.setTabSelected(sTabAreaId, index);
+
+    nz.dynatab.change(sTabAreaId, index);
 
     nz.dynatab.log(prefix + "Exiting");
     return true;
@@ -183,6 +188,37 @@ nz.dynatab.Clear = function (sTabAreaId) {
     nz.dynatab.log(prefix + "Exiting");
 }
 
+
+// Attach a function to be called when the selected tab changes.
+nz.dynatab.SetCallback_onChange = function (sTabAreaId, fnCallback) {
+    var prefix = "nz.dynatab.SetCallback_onChange() - ";
+    nz.dynatab.log(prefix + "Entering");
+
+    var tabArea = nz.dynatab[sTabAreaId];
+    if (fc.utils.isInvalidVar(tabArea)) {
+        var msgBadTabAreaId = "Could not find a TabArea with ID=" + sTabAreaId;
+        nz.dynatab.error(prefix + msgBadTabAreaId);
+        return false;
+    }
+
+    if (fc.utils.isInvalidVar(fnCallback)) {
+        var msgBadCallback = "Callback function is not a valid variable.";
+        nz.dynatab.error(prefix + msgBadCallback);
+        return false;
+    }
+
+    if (typeof fnCallback !== "function") {
+        var msgCallbackNotAFunction = "Callback variable is not a function.";
+        nz.dynatab.error(prefix + msgCallbackNotAFunction);
+        return false;
+    }
+
+    // All tests pass, store callback fn
+    nz.dynatab[sTabAreaId].callback.change = fnCallback;
+
+    nz.dynatab.log(prefix + "Exiting");
+    return true;
+}
 
 nz.dynatab.getIndices = function (sTabAreaId) {
     var prefix = "nz.dynatab.getIndices() - ";
@@ -257,21 +293,22 @@ nz.dynatab.removeTab = function (sTabAreaId, index) {
     // Remove the content node
     fc.utils.removeElement(divContentNodeToRemove);
 
-    // If there is a next sibling, select that
+    var newIndex = -1;
     if (divTabNodeNext !== null) {
-        var nextIndex = divTabNodeNext.getAttribute("data-index");
-        nz.dynatab.setTabSelected(sTabAreaId, nextIndex);
-        return;
+        // If there is a next sibling, select that
+        newIndex = divTabNodeNext.getAttribute("data-index");
+        nz.dynatab.setTabSelected(sTabAreaId, newIndex);
+    }
+    else if (divTabNodePrevious !== null) {
+        // Else, if there is a previous sibling, select that
+        newIndex = divTabNodePrevious.getAttribute("data-index");
+        nz.dynatab.setTabSelected(sTabAreaId, newIndex);
+    }
+    else {
+        // No op, leave the newIndex as is
     }
 
-    // Else, if there is a previous sibling, select that
-    if (divTabNodePrevious !== null) {
-        var prevIndex = divTabNodePrevious.getAttribute("data-index");
-        nz.dynatab.setTabSelected(sTabAreaId, prevIndex);
-        return;
-    }
-
-    // Else, no tabs exist, nothing can be done.
+    nz.dynatab.change(sTabAreaId, newIndex);
 
     nz.dynatab.log(prefix + "Exiting");
 }
@@ -293,6 +330,7 @@ nz.dynatab.divTab_onClick = function (event) {
     nz.dynatab.log(prefix + "Click: AreaId=" + areaId + ", Index=" + index);
 
     nz.dynatab.setTabSelected(areaId, index);
+    nz.dynatab.change(areaId, index);
 
     nz.dynatab.log(prefix + "Exiting");
 }
@@ -320,6 +358,33 @@ nz.dynatab.btnCloseTab_onClick = function (button, event) {
 ///////////////////////////////////////////////////////////////////////////////
 // HELPERS
 //
+
+nz.dynatab.change = function (sTabAreaId, newIndex) {
+    var prefix = "nz.dynatab.change() - ";
+
+    var fnCallback = nz.dynatab[sTabAreaId].callback.change;
+
+    var sTabText = nz.dynatab.getTabTextByIndex(sTabAreaId, newIndex);
+
+    if (fc.utils.isValidVar(fnCallback)) {
+        if (typeof fnCallback === "function") {
+            try {
+                fnCallback(sTabAreaId, newIndex, sTabText);
+            }
+            catch (ex) {
+                var msgException = "Failed during callback for tab change event with exception: " + ex.message;
+                nz.dynatab.error(prefix + msgException);
+            }
+        }
+        else {
+            nz.dynatab.log(prefix + "Not calling callback function because callback function variable is not of type function.");
+        }
+    }
+    else {
+        nz.dynatab.log(prefix + "Not calling callback function because callback function variable is not valid.");
+    }
+}
+
 
 nz.dynatab.getBackgroundColours = function (sTabAreaId, container) {
 
@@ -354,9 +419,10 @@ nz.dynatab.createDivTab = function (sTabAreaId, index, sTabText, bIncludeCloseBu
     divTab.setAttribute("data-divtype", nz.dynatab.config.sDivTypeTab);
     divTab.setAttribute("data-index", index);
     divTab.setAttribute("data-areaid", sTabAreaId);
+    divTab.setAttribute("data-text", sTabText);
 
     divTab.className = nz.dynatab[sTabAreaId]["styleDefn"]["tab"];
-    divTab.style.display = "inline-block"; 
+    divTab.style.display = "inline-block";
 
     // Attach a click handler to the div
     divTab.onclick = nz.dynatab.divTab_onClick;
@@ -459,7 +525,23 @@ nz.dynatab.getPeerNodes = function (parent, targetType, nIndexToExclude) {
     return arrPeerNodes;
 }
 
+nz.dynatab.getTabTextByIndex = function (sTabAreaId, index) {
 
+    if (index < 0) return "";
+
+    // Get the wrapper
+    var sWrapperId = nz.dynatab[sTabAreaId]["sWrapperId"];
+    var wrapper = document.getElementById(sWrapperId);
+
+    // Get the divTab (div that is the tab sticking up, the label)
+    var divTab = nz.dynatab.getNode(wrapper, nz.dynatab.config.sDivTypeTab, index);
+
+    if (fc.utils.isValidVar(divTab)) {
+        return divTab.getAttribute("data-text");
+    }
+
+    return ""; // Fail
+}
 
 nz.dynatab.setTabSelected = function (sTabAreaId, index) {
     var prefix = "nz.dynatab.setTabSelected() - ";

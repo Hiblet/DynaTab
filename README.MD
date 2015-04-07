@@ -53,7 +53,22 @@ A tab is added by calling AddTab() with the arguments being...
         nz.dynatab.AddTab("TabSetA", "Tab 1", contentA1, false, false, true);
 
 
-To remove all tabs, a Clear() function has been implemented, which requires the control name as an argument.
+To remove all tabs, a nz.dynatab.Clear() function has been implemented, which requires the control name as an argument.
+
+To detect which tab is currently selected, a callback function can be attached to a tab set.
+Once the tab area has been prepared by the Build() function, you can call nz.dynatab.SetCallback_onChange().  
+The first argument for this function is the tab area ID, and the second argument is the function that you want called when the tab selection changes, eg.
+
+        nz.dynatab.SetCallback_onChange("TabSetA", myproject.onTabSelectChange);
+
+SetCallback_onChange() returns true if the passed function is validated as a function and stored correctly, else returns false.
+
+When the selected tab is changed, the callback function (in this example, myproject.onTabSelectChange) is called.
+The callback function receives three arguments, the tab area ID, the index number of the newly selected tab, and the text identifier of the newly selected tab, ie the text that is displayed on the tab.
+This should be enough information for the coder to then call nz.dynatab.removeTab(), as this requires the tab area ID and the index of the tab to remove.
+If there are no tabs left, the index returned is -1, and the tab text returned is the empty string.
+
+
 
 
 

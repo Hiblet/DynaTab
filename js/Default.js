@@ -97,6 +97,9 @@ nz.test.init = function () {
     nz.dynatab.AddTab("TabSetA", "Tab 4th", contentA4, false, false, true);
 
 
+    // Callback test
+    nz.dynatab.SetCallback_onChange("TabSetC", nz.test.showSelectedTabSetC);
+
     console.log(prefix + "Exiting");
 }
 
@@ -173,30 +176,37 @@ nz.test.createRandomRGBColour = function (rMin, rMax, gMin, gMax, bMin, bMax) {
     return "rgb(" + randomR.toString() + "," + randomG.toString() + "," + randomB.toString() + ")";
 }
 
+
+nz.test.showSelectedTabSetC = function (sTabAreaId, index, sTabText) {
+    var lblTabSetCSelected = $("label[id*=lblTabSetCSelected]");
+    var sMsg = sTabText + "(" + index + ")";
+    lblTabSetCSelected.html(sMsg);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // HANDLERS
 //
 
-nz.test.btnAddA_onClick = function (id, event) {
+nz.test.btnAddA_onClick = function (event) {
     var prefix = "nz.test.btnAddA_onClick() - ";
-    nz.test.log(prefix + "Clicked: " + id);
+    nz.test.log(prefix + "Clicked: " + event.target.id);
 
     var content = nz.test.createRandomContent();
     var sTabText = "Tab " + nz.test.config.nDivSeqNum.toString();
     nz.dynatab.AddTab("TabSetA", sTabText, content, false, false, true);
 }
 
-nz.test.btnClearA_onClick = function (id, event) {
+nz.test.btnClearA_onClick = function (event) {
     var prefix = "nz.test.btnClearA_onClick() - ";
-    nz.test.log(prefix + "Clicked: " + id);
+    nz.test.log(prefix + "Clicked: " + event.target.id);
 
     nz.dynatab.Clear("TabSetA");
 }
 
 
-nz.test.btnAddB_onClick = function (id, event) {
+nz.test.btnAddB_onClick = function (event) {
     var prefix = "nz.test.btnAddB_onClick() - ";
-    nz.test.log(prefix + "Clicked: " + id);
+    nz.test.log(prefix + "Clicked: " + event.target.id);
 
     var content = nz.test.createRandomContent();
     var sTabText = "Tab " + nz.test.config.nDivSeqNum.toString();
@@ -204,9 +214,9 @@ nz.test.btnAddB_onClick = function (id, event) {
 }
 
 
-nz.test.btnAddC_onClick = function (id, event) {
+nz.test.btnAddC_onClick = function (event) {
     var prefix = "nz.test.btnAddC_onClick() - ";
-    nz.test.log(prefix + "Clicked: " + id);
+    nz.test.log(prefix + "Clicked: " + event.target.id);
 
     var content = nz.test.createRandomContent(false); // Random, relative sized content divs
     var sTabText = "Tab " + nz.test.config.nDivSeqNum.toString();
