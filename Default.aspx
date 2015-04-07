@@ -50,8 +50,10 @@
         <div id="divPlaceHolderC"></div>
         <br />
         <br />
-
-
+        Tab Set C Selected:<label id="lblTabSetCSelected"></label>
+        <br />
+        <br />
+        
     </div>
     </form>
 </body>
