@@ -237,11 +237,23 @@ nz.test.btnAddC_onClick = function (event) {
     nz.dynatab.AddTab("TabSetC", sTabText, content, true, true, true);
 }
 
+nz.test.btnSelectC_onClick = function (event) {
+    var prefix = "nz.test.btnSelectC_onClick() - ";
+    nz.test.log(prefix + "Clicked: " + event.target.id);
+
+    var textboxSelectC = $("input[id*=textboxSelectC]");
+    var sTabText = textboxSelectC.val();
+    nz.dynatab.SetTabSelectedByTabText("TabSetC", sTabText);
+}
+
 
 nz.test.hookupHandlers = function () {
 
     var btnAddA = document.getElementById("btnAddA");
     fc.utils.addEvent(btnAddA, "click", nz.test.btnAddA_onClick);
+
+    var btnClearA = document.getElementById("btnClearA");
+    fc.utils.addEvent(btnClearA, "click", nz.test.btnClearA_onClick);
 
     var btnAddB = document.getElementById("btnAddB");
     fc.utils.addEvent(btnAddB, "click", nz.test.btnAddB_onClick);
@@ -252,8 +264,8 @@ nz.test.hookupHandlers = function () {
     var btnAddC = document.getElementById("btnAddC");
     fc.utils.addEvent(btnAddC, "click", nz.test.btnAddC_onClick);
 
-    var btnClearA = document.getElementById("btnClearA");
-    fc.utils.addEvent(btnClearA, "click", nz.test.btnClearA_onClick);
+    var btnSelectC = document.getElementById("btnSelectC");
+    fc.utils.addEvent(btnSelectC, "click", nz.test.btnSelectC_onClick);
 
 }
 

@@ -28,10 +28,14 @@
         <input type="button" id="btnClearA" value="Clear A" />
         <br />
         <input type="button" id="btnAddB" value="Add Tab B" />
+        &nbsp
         <input type="button" id="btnRemoveB" value="Remove Tab B" />
         <input type="text" id="textboxRemoveB" />
         <br />
         <input type="button" id="btnAddC" value="Add Tab C" />
+        &nbsp
+        <input type="button" id="btnSelectC" value="Select Tab C" />
+        <input type="text" id="textboxSelectC" />
         <br />
 
 
