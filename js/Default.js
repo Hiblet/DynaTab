@@ -183,6 +183,9 @@ nz.test.showSelectedTabSetC = function (sTabAreaId, index, sTabText) {
     lblTabSetCSelected.html(sMsg);
 }
 
+
+
+
 ///////////////////////////////////////////////////////////////////////////////
 // HANDLERS
 //
@@ -213,6 +216,17 @@ nz.test.btnAddB_onClick = function (event) {
     nz.dynatab.AddTab("TabSetB", sTabText, content, false, false, true);
 }
 
+nz.test.btnRemoveB_onClick = function (event) {
+    var prefix = "nz.test.btnRemoveB_onClick() - ";
+    nz.test.log(prefix + "Clicked: " + event.target.id);
+
+    var textboxRemoveB = $("input[id*=textboxRemoveB]");
+    var sTabText = textboxRemoveB.val();
+    nz.dynatab.RemoveTabByTabText("TabSetB", sTabText);
+}
+
+
+
 
 nz.test.btnAddC_onClick = function (event) {
     var prefix = "nz.test.btnAddC_onClick() - ";
@@ -231,6 +245,9 @@ nz.test.hookupHandlers = function () {
 
     var btnAddB = document.getElementById("btnAddB");
     fc.utils.addEvent(btnAddB, "click", nz.test.btnAddB_onClick);
+
+    var btnRemoveB = document.getElementById("btnRemoveB");
+    fc.utils.addEvent(btnRemoveB, "click", nz.test.btnRemoveB_onClick);
 
     var btnAddC = document.getElementById("btnAddC");
     fc.utils.addEvent(btnAddC, "click", nz.test.btnAddC_onClick);
