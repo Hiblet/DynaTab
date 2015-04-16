@@ -58,6 +58,9 @@ To remove all tabs, a nz.dynatab.Clear() function has been implemented, which re
 To remove a tab by it's tab text (display name), a nz.dynatab.RemoveTabByTabText() function has been implemented.  
 This requires a control name, and the tab text to match on.  Text matching is case insensitive, implemented using toUpperCase() in string comparison.
 
+To select a tab by it's tab text, nz.dynatab.SetTabSelectedByTabText() has been implemented.
+Again, this requires the control name, and the tab text to match on.  Matching is case insensitive.
+
 To detect which tab is currently selected, a callback function can be attached to a tab set.
 Once the tab area has been prepared by the Build() function, you can call nz.dynatab.SetCallback_onChange().  
 The first argument for this function is the tab area ID, and the second argument is the function that you want called when the tab selection changes, eg.

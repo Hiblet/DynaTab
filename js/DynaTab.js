@@ -277,25 +277,7 @@ nz.dynatab.RemoveTabByTabText = function (sTabAreaId, sTabText) {
 
     // Get the index of a tab with this text, and call removeTab with it.
 
-    var sWrapperId = nz.dynatab[sTabAreaId]["sWrapperId"];
-    var wrapper = document.getElementById(sWrapperId);
-    var index = -1;
-
-    var nodes = wrapper.childNodes;
-    for (var i = 0; i < nodes.length; ++i) {
-
-        var currentNode = nodes[i];
-        var currentType = currentNode.getAttribute("data-divtype");
-        var currentIndex = currentNode.getAttribute("data-index");
-        var currentTabText = currentNode.getAttribute("data-text");
-
-        if (currentType == nz.dynatab.config.sDivTypeTab) {
-            if (currentTabText.toUpperCase() == sTabText.toUpperCase()) {
-                index = currentIndex;
-                break;
-            }
-        }
-    }
+    var index = nz.dynatab.getIndexByTabText(sTabAreaId,sTabText);
 
     if (index == -1) {
         nz.dynatab.log(prefix + "No tab found with text [" + sTabText + "]");
@@ -305,6 +287,40 @@ nz.dynatab.RemoveTabByTabText = function (sTabAreaId, sTabText) {
         nz.dynatab.log(prefix + "Attempted remove of tab at index [" + index + "] with text [" + sTabText + "]");
     }
 }
+
+nz.dynatab.SetTabSelectedByTabText = function (sTabAreaId, sTabText) {
+    var prefix = "nz.dynatab.SetTabSelectedByTabText() - ";
+    nz.dynatab.log(prefix + "Entering");
+
+    if (fc.utils.isInvalidVar(sTabText)) {
+        nz.dynatab.warn(prefix + "sTabText argument was invalid")
+        return;
+    }
+
+    if (!fc.utils.isString(sTabText)) {
+        nz.dynatab.warn(prefix + "sTabText argument was not a string")
+        return;
+    }
+
+    if (fc.utils.isEmptyStringOrWhiteSpace(sTabText)) {
+        nz.dynatab.warn(prefix + "sTabText argument was empty")
+        return;
+    }
+
+    // Get the index of a tab with this text, and call setTabSelected()
+
+    var index = nz.dynatab.getIndexByTabText(sTabAreaId, sTabText);
+
+    if (index == -1) {
+        nz.dynatab.log(prefix + "No tab found with text [" + sTabText + "]");
+    }
+    else {
+        nz.dynatab.setTabSelected(sTabAreaId, index);
+        nz.dynatab.log(prefix + "Attempted selection of tab at index [" + index + "] with text [" + sTabText + "]");
+    }
+}
+
+
 
 nz.dynatab.removeTab = function (sTabAreaId, index) {
     var prefix = "nz.dynatab.removeTab() - ";
@@ -573,6 +589,37 @@ nz.dynatab.getPeerNodes = function (parent, targetType, nIndexToExclude) {
     }
 
     return arrPeerNodes;
+}
+
+
+nz.dynatab.getIndexByTabText = function (sTabAreaId, sTabText) {
+
+    var index = -1;
+
+    if (fc.utils.isInvalidVar(sTabText) || fc.utils.isEmptyStringOrWhiteSpace(sTabText)) {
+        return index;
+    }
+
+    var sWrapperId = nz.dynatab[sTabAreaId]["sWrapperId"];
+    var wrapper = document.getElementById(sWrapperId);
+
+    var nodes = wrapper.childNodes;
+    for (var i = 0; i < nodes.length; ++i) {
+
+        var currentNode = nodes[i];
+        var currentType = currentNode.getAttribute("data-divtype");
+        var currentIndex = currentNode.getAttribute("data-index");
+        var currentTabText = currentNode.getAttribute("data-text");
+
+        if (currentType == nz.dynatab.config.sDivTypeTab) {
+            if (currentTabText.toUpperCase() == sTabText.toUpperCase()) {
+                index = currentIndex;
+                break;
+            }
+        }
+    }
+
+    return index;
 }
 
 nz.dynatab.getTabTextByIndex = function (sTabAreaId, index) {
