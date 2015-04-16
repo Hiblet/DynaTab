@@ -77,6 +77,10 @@ fc.utils.isLetterOrDigit = function (c) {
 // TEXT
 //
 
+fc.utils.isString = function (obj) {
+    return (typeof obj == "string" || obj instanceof String);
+}
+
 fc.utils.isEmptyString = function(obj) {
 
     // If the passed object is not defined, or the object is an empty string
